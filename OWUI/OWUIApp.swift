@@ -28,5 +28,19 @@ struct OWUIApp: App {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
+        .commands {
+            CommandMenu("OWUI URL") {
+                Button("Reset URL") {
+                    resetURL()
+                }
+                .keyboardShortcut("r", modifiers: [.command, .shift])
+            }
+        }
+    }
+    
+    private func resetURL() {
+        UserDefaults.standard.removeObject(forKey: "owuiURL")
+        // Post a notification to tell ContentView to update
+        NotificationCenter.default.post(name: NSNotification.Name("ResetURL"), object: nil)
     }
 }
