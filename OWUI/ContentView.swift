@@ -47,6 +47,7 @@ struct ContentView: View {
   @State private var urlInput: String = ""
   @State private var owuiURL: String = UserDefaults.standard.string(forKey: "owuiURL") ?? "pineapple"
   @State private var pageTitle: String = "OWUI"
+  @State private var webViewID = UUID()
   
   var body: some View {
     VStack {
@@ -61,6 +62,7 @@ struct ContentView: View {
             // Reload the view to reflect the new URL
               if let url = URL(string: urlInput) {
                 WebView(url: url, pageTitle: $pageTitle)
+                  .id(webViewID)
                   .frame(minWidth: 600, minHeight: 300)
               } else {
                 print("Invalid URL")
@@ -72,6 +74,7 @@ struct ContentView: View {
         VStack {
           if let url = URL(string: owuiURL) {
             WebView(url: url, pageTitle: $pageTitle)
+              .id(webViewID)
               .frame(minWidth: 600, minHeight: 300)
           } else {
             Text("Invalid URL")
@@ -82,6 +85,37 @@ struct ContentView: View {
     .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ResetURL"))) { _ in
       owuiURL = "pineapple"
       urlInput = ""
+    }
+    .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ScreenshotPage"))) { _ in
+    if let window = NSApplication.shared.windows.first,
+       let contentView = window.contentView {
+      let rep = contentView.bitmapImageRepForCachingDisplay(in: contentView.bounds)!
+      contentView.cacheDisplay(in: contentView.bounds, to: rep)
+      let image = NSImage(size: contentView.bounds.size)
+      image.addRepresentation(rep)
+      let panel = NSSavePanel()
+      panel.allowedFileTypes = ["png"]
+      panel.nameFieldStringValue = "screenshot.png"
+      panel.begin { response in
+        if response == .OK, let url = panel.url {
+      if let tiffData = image.tiffRepresentation,
+         let bitmap = NSBitmapImageRep(data: tiffData),
+         let pngData = bitmap.representation(using: .png, properties: [:]) {
+        try? pngData.write(to: url)
+      }
+        }
+      }
+    }
+    }
+    .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("RefreshPage"))) { _ in
+      if let window = NSApplication.shared.windows.first,
+         let webView = window.contentView?.subviews.first(where: { $0 is WKWebView }) as? WKWebView {
+        webView.reload()
+      }
+    }
+    .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("HardRefreshPage"))) { _ in
+      // Force WebView recreation by changing its ID
+      webViewID = UUID()
     }
     .onChange(of: pageTitle) { _, newTitle in
       if let window = NSApplication.shared.windows.first {
