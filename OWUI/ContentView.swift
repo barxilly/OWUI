@@ -48,6 +48,7 @@ struct ContentView: View {
   @State private var owuiURL: String = UserDefaults.standard.string(forKey: "owuiURL") ?? "pineapple"
   @State private var pageTitle: String = "OWUI"
   @State private var webViewID = UUID()
+
   
   var body: some View {
     VStack {
@@ -55,6 +56,19 @@ struct ContentView: View {
         VStack {
           TextField("http://localhost:8080", text: $urlInput)
             .frame(maxWidth: 300)
+            // Enter
+            .onSubmit {
+              UserDefaults.standard.set(urlInput, forKey: "owuiURL")
+              owuiURL = urlInput
+              // Reload the view to reflect the new URL
+              if let url = URL(string: urlInput) {
+                WebView(url: url, pageTitle: $pageTitle)
+                  .id(webViewID)
+                  .frame(minWidth: 600, minHeight: 300)
+              } else {
+                print("Invalid URL")
+              }
+            }
 
           Button("Set URL") {
             UserDefaults.standard.set(urlInput, forKey: "owuiURL")
@@ -71,14 +85,76 @@ struct ContentView: View {
 
         }.frame(minWidth: 600, minHeight: 300)
       } else {
-        VStack {
-          if let url = URL(string: owuiURL) {
-            WebView(url: url, pageTitle: $pageTitle)
-              .id(webViewID)
-              .frame(minWidth: 600, minHeight: 300)
-          } else {
-            Text("Invalid URL")
+        if let url = URL(string: owuiURL) {
+          WebView(url: url, pageTitle: $pageTitle)
+            .id(webViewID)
+            .frame(minWidth: 600, minHeight: 300)
+        } else {
+          Text("Invalid URL")
+        }
+      }
+    }
+    .toolbar {
+      ToolbarItem(placement: .navigation) {
+        HStack {
+          Button(action: {
+            if let window = NSApplication.shared.windows.first,
+               let webView = window.contentView?.subviews.first(where: { $0 is WKWebView }) as? WKWebView {
+              webView.goBack()
+            }
+          }) {
+            Image(systemName: "chevron.left")
           }
+          .help("Back")
+
+          Button(action: {
+            if let window = NSApplication.shared.windows.first,
+               let webView = window.contentView?.subviews.first(where: { $0 is WKWebView }) as? WKWebView {
+              webView.goForward()
+            }
+          }) {
+            Image(systemName: "chevron.right")
+          }
+          .help("Forward")
+
+          Button(action: {
+            if let window = NSApplication.shared.windows.first,
+               let webView = window.contentView?.subviews.first(where: { $0 is WKWebView }) as? WKWebView {
+              webView.reload()
+            }
+          }) {
+            Image(systemName: "arrow.clockwise")
+          }
+          .help("Refresh")
+          
+          if owuiURL != "pineapple" && owuiURL != "https://example.com" {
+            Text(owuiURL)
+              .foregroundColor(.secondary)
+              .font(.caption)
+              .lineLimit(1)
+              .truncationMode(.middle)
+              .padding(.trailing)
+          }
+        }
+      }
+      
+      ToolbarItem(placement: .primaryAction) {
+        HStack {
+          Button(action: {
+            NotificationCenter.default.post(name: NSNotification.Name("ScreenshotPage"), object: nil)
+          }) {
+            Image(systemName: "camera")
+          }
+          .help("Screenshot")
+          
+          Button(action: {
+            UserDefaults.standard.removeObject(forKey: "owuiURL")
+            owuiURL = "pineapple"
+            urlInput = ""
+          }) {
+            Image(systemName: "link")
+          }
+          .help("Reset URL")
         }
       }
     }
@@ -94,7 +170,7 @@ struct ContentView: View {
       let image = NSImage(size: contentView.bounds.size)
       image.addRepresentation(rep)
       let panel = NSSavePanel()
-      panel.allowedFileTypes = ["png"]
+      panel.allowedContentTypes = [.png]
       panel.nameFieldStringValue = "screenshot.png"
       panel.begin { response in
         if response == .OK, let url = panel.url {
@@ -119,7 +195,7 @@ struct ContentView: View {
     }
     .onChange(of: pageTitle) { _, newTitle in
       if let window = NSApplication.shared.windows.first {
-        window.title = newTitle
+        window.title = ""
       }
     }
   }

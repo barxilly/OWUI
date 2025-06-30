@@ -28,6 +28,7 @@ struct OWUIApp: App {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
+        .windowToolbarStyle(.unified)
         .commands {
             CommandMenu("OWUI URL") {
                 Button("Reset URL") {
