@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWUI - Open WebUI macOS Client</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            padding: 2rem 0;
+            text-align: center;
+            color: white;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border-color: rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            margin-top: 2rem;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+        }
+
+        .content-section {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            text-align: center;
+            color: #666;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .demo-video {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .video-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            background: #f8f9fa;
+            aspect-ratio: 16/10;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #6c757d;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .feature p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .download-options {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .download-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 280px;
+        }
+
+        .download-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .download-card p {
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .system-requirements {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .requirements-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .requirements-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .requirements-list li::before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .download-options {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">OWUI</h1>
+            <p class="tagline">Native macOS client for Open WebUI</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/barxilly/OWUI/releases/download/1.0.0/OWUI.zip" class="btn btn-primary">
+                    <span>⬇️</span> Download v1.0.0
+                </a>
+                <a href="https://github.com/barxilly/OWUI" class="btn btn-secondary">
+                    <span>🔧</span> Build from Source
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="content-section">
+            <div class="container">
+                <h2 class="section-title">See OWUI in Action</h2>
+                <p class="section-subtitle">
+                    Watch how OWUI seamlessly integrates Open WebUI into your macOS workflow with native performance and intuitive controls.
+                </p>
+                
+                <div class="demo-video">
+                    <div class="video-container">
+                        <video controls width="100%" style="border-radius: 16px;">
+                            <source src="OWUI-Demo.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">🚀</div>
+                        <h3>Native Performance</h3>
+                        <p>Built with SwiftUI and WebKit for optimal macOS integration and performance.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔐</div>
+                        <h3>Smart Validation</h3>
+                        <p>Automatically validates Open WebUI instances to ensure seamless connectivity.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📸</div>
+                        <h3>Built-in Screenshots</h3>
+                        <p>Capture and save screenshots directly from the app with native macOS integration.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">⌨️</div>
+                        <h3>Keyboard Shortcuts</h3>
+                        <p>Full keyboard shortcut support for power users and efficient workflow.</p>
+                    </div>
+                </div>
+
+                <div class="system-requirements">
+                    <h3>System Requirements</h3>
+                    <ul class="requirements-list">
+                        <li>macOS 12.0 or later</li>
+                        <li>Intel or Apple Silicon Mac</li>
+                        <li>Access to an Open WebUI instance</li>
+                        <li>Internet connection for initial setup</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <section class="download-section">
+        <div class="container">
+            <h2 class="section-title" style="color: white; -webkit-text-fill-color: white;">Get Started Today</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">
+                Choose your preferred way to get OWUI running on your Mac
+            </p>
+            
+            <div class="download-options">
+                <div class="download-card">
+                    <h3>📦 Ready to Use</h3>
+                    <p>Download the pre-built app and start using OWUI immediately. No setup required.</p>
+                    <a href="https://github.com/barxilly/OWUI/releases/download/1.0.0/OWUI.zip" class="btn btn-primary">
+                        Download OWUI.zip
+                    </a>
+                </div>
+                
+                <div class="download-card">
+                    <h3>🛠️ Build Yourself</h3>
+                    <p>Clone the repository and build from source. Perfect for developers and customization.</p>
+                    <a href="https://github.com/barxilly/OWUI" class="btn btn-secondary">
+                        View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/barxilly/OWUI">GitHub Repository</a>
+                <a href="https://github.com/barxilly/OWUI/issues">Report Issues</a>
+                <a href="https://github.com/open-webui/open-webui">Open WebUI Project</a>
+            </div>
+            <p>&copy; 2025 OWUI. Open source project built for the community.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add download tracking (optional)
+        document.querySelectorAll('a[href*="releases/download"]').forEach(link => {
+            link.addEventListener('click', function() {
+                // You can add analytics tracking here
+                console.log('Download started:', this.href);
+            });
+        });
+    </script>
+</body>
+</html>
