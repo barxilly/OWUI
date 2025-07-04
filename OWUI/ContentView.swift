@@ -52,35 +52,64 @@ struct ContentView: View {
   
   var body: some View {
     VStack {
-      if owuiURL == "pineapple" || owuiURL == "https://example.com" {
+      if owuiURL == "pineapple" || owuiURL == "pineappleE" || owuiURL == "https://example.com" {
         VStack {
           TextField("http://localhost:8080", text: $urlInput)
             .frame(maxWidth: 300)
             // Enter
             .onSubmit {
-              UserDefaults.standard.set(urlInput, forKey: "owuiURL")
-              owuiURL = urlInput
-              // Reload the view to reflect the new URL
-              if let url = URL(string: urlInput) {
-                WebView(url: url, pageTitle: $pageTitle)
-                  .id(webViewID)
-                  .frame(minWidth: 600, minHeight: 300)
+              // Check if the URL is valid and is OWUI (check for /static/splash.png existing on the server)
+              let splashURLString = urlInput.hasSuffix("/") ? "\(urlInput)static/splash.png" : "\(urlInput)/static/splash.png"
+              if let splashURL = URL(string: splashURLString) {
+                let task = URLSession.shared.dataTask(with: splashURL) { data, response, error in
+                  DispatchQueue.main.async {
+                    if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                      // splash.png exists, set the URL
+                      UserDefaults.standard.set(urlInput, forKey: "owuiURL")
+                      owuiURL = urlInput
+                      webViewID = UUID() // Force reload
+                    } else {
+                      // splash.png does not exist, reset URL
+                      UserDefaults.standard.removeObject(forKey: "owuiURL")
+                      owuiURL = "pineappleE"
+                      urlInput = ""
+                    }
+                  }
+                }
+                task.resume()
               } else {
                 print("Invalid URL")
               }
             }
+            
+            Text(owuiURL == "pineappleE" ? "Please input a valid Open WebUI URL" : "")
+              .foregroundColor(.red)
+              .font(.caption)
+              .padding(.top, 5)
 
           Button("Set URL") {
-            UserDefaults.standard.set(urlInput, forKey: "owuiURL")
-            owuiURL = urlInput
-            // Reload the view to reflect the new URL
-              if let url = URL(string: urlInput) {
-                WebView(url: url, pageTitle: $pageTitle)
-                  .id(webViewID)
-                  .frame(minWidth: 600, minHeight: 300)
-              } else {
-                print("Invalid URL")
+            // Check if the URL is valid and is OWUI (check for /static/splash.png existing on the server)
+            let splashURLString = urlInput.hasSuffix("/") ? "\(urlInput)static/splash.png" : "\(urlInput)/static/splash.png"
+            if let splashURL = URL(string: splashURLString) {
+              let task = URLSession.shared.dataTask(with: splashURL) { data, response, error in
+                DispatchQueue.main.async {
+                  if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                    // splash.png exists, set the URL
+                    UserDefaults.standard.set(urlInput, forKey: "owuiURL")
+                    owuiURL = urlInput
+                    webViewID = UUID() // Force reload
+                  } else {
+                    // splash.png does not exist, reset URL
+                    UserDefaults.standard.removeObject(forKey: "owuiURL")
+                    owuiURL = "pineappleE"
+                    urlInput = ""
+                  }
+                }
               }
+              task.resume()
+            } else {
+              print("Invalid URL")
+            }
           }
 
         }.frame(minWidth: 600, minHeight: 300)
